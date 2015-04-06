@@ -8,6 +8,7 @@ module Options.Applicative.Simple
   ) where
 
 import Control.Monad.Trans.Writer
+import Data.Monoid
 import Data.Version
 import Development.GitRev (gitDirty, gitHash)
 import Language.Haskell.TH
@@ -15,11 +16,11 @@ import Language.Haskell.TH.Syntax
 import Options.Applicative
 
 -- | Generate a simple options parser.
-simpleOptions :: String                          -- ^ version string
-              -> String                          -- ^ header
-              -> String                          -- ^ program description
-              -> Parser a                        -- ^ global settings
-              -> Writer (Mod CommandFields b) () -- ^ commands (use 'addCommand')
+simpleOptions :: String                         -- ^ version string
+              -> String                         -- ^ header
+              -> String                         -- ^ program description
+              -> Parser a                       -- ^ global settings
+              -> Writer [Mod CommandFields b] b -- ^ commands (use 'addCommand')
               -> IO (a,b)
 simpleOptions versionString h pd globalParser commandParser =
   execParser $
@@ -36,7 +37,9 @@ simpleOptions versionString h pd globalParser commandParser =
              help "Show version")
         config =
           (,) <$> globalParser <*>
-          subparser (execWriter commandParser)
+          case (runWriter commandParser) of
+            (b,[]) -> pure b
+            (_,cmds) -> subparser (mconcat cmds)
 
 -- | Generate a string like @Version 1.2, Git revision 1234@.
 --
@@ -57,9 +60,8 @@ addCommand :: String   -- ^ command string
            -> String   -- ^ title of command
            -> (a -> b) -- ^ constructor to wrap up command in common data type
            -> Parser a -- ^ command parser
-           -> Writer (Mod CommandFields b) ()
+           -> Writer [Mod CommandFields b] ()
 addCommand cmd title constr inner =
-  tell $
-  command cmd
-          (info (constr <$> inner)
-                (progDesc title))
+  tell [command cmd
+                (info (constr <$> inner)
+                      (progDesc title))]
