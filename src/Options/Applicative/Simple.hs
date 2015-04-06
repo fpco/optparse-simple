@@ -1,6 +1,24 @@
 {-# LANGUAGE TemplateHaskell #-}
 
 -- | Simple interface to program arguments.
+--
+-- Typical usage with no commands:
+--
+-- @
+-- do (opts,()) <- simpleOptions "ver" "header" "desc"
+--                      (flag () () (long "some-flag"))
+--                      empty
+--    doThings opts
+-- @
+--
+-- Typical usage with commands:
+--
+-- @
+-- do (opts,runCmd) <- simpleOptions "ver" "header" "desc" (pure ()) $
+--         addCommand "delete" "Delete the thing" (const deleteTheThing) (pure ())
+--         addCommand "create" "Create a thing" createAThing (strOption (long "hello"))
+--    runCmd
+-- @
 
 module Options.Applicative.Simple
   ( module Options.Applicative.Simple
