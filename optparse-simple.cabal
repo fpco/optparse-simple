@@ -20,3 +20,4 @@ library
                    , transformers
                    , optparse-applicative
                    , gitrev
+                   , either
