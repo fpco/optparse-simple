@@ -8,18 +8,30 @@ Simple interface to optparse-applicative
 Typical usage with no commands:
 
 ``` haskell
-do (opts,()) <- simpleOptions "ver" "header" "desc"
-                     (flag () () (long "some-flag"))
-                     empty
+do (opts,()) <-
+     simpleOptions "ver"
+                   "header"
+                   "desc"
+                   (flag () () (long "some-flag"))
+                   empty
    doThings opts
 ```
 
 Typical usage with commands:
 
 ``` haskell
-do (opts,runCmd) <- simpleOptions "ver" "header" "desc" (pure ()) $
-        addCommand "delete" "Delete the thing" (const deleteTheThing) (pure ())
-        addCommand "create" "Create a thing" createAThing (strOption
-        (long "hello"))
+do (opts,runCmd) <-
+     simpleOptions "ver"
+                   "header"
+                   "desc"
+                   (pure ()) $
+     do addCommand "delete"
+                   "Delete the thing"
+                   (const deleteTheThing)
+                   (pure ())
+        addCommand "create"
+                   "Create a thing"
+                   createAThing
+                   (strOption (long "hello"))
    runCmd
 ```
