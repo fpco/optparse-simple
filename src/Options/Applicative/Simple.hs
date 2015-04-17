@@ -47,6 +47,7 @@ import           Development.GitRev (gitDirty, gitHash)
 import           Language.Haskell.TH (Q,Exp)
 import qualified Language.Haskell.TH.Syntax as TH
 import           Options.Applicative
+import           System.Environment
 
 -- | Generate a simple options parser.
 simpleOptions
@@ -62,9 +63,12 @@ simpleOptions
   -- ^ commands (use 'addCommand')
   -> IO (a,b)
 simpleOptions versionString h pd globalParser commandParser =
-  execParser $
-  info (helpOption <*> versionOption <*> config) desc
-  where desc = fullDesc <> header h <> progDesc pd
+  do args <- getArgs
+     case getParseResult (execParserPure (prefs idm) parser args) of
+       Nothing -> withArgs ["--help"] (execParser parser)
+       Just ab -> return ab
+  where parser = info (helpOption <*> versionOption <*> config) desc
+        desc = fullDesc <> header h <> progDesc pd
         helpOption =
           abortOption ShowHelpText $
           long "help" <>
@@ -76,7 +80,7 @@ simpleOptions versionString h pd globalParser commandParser =
              help "Show version")
         config =
           (,) <$> globalParser <*>
-          case (runWriter (runEitherT commandParser)) of
+          case runWriter (runEitherT commandParser) of
             (Right (),d) -> subparser d
             (Left b,_) -> pure b
 
