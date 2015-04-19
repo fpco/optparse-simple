@@ -64,9 +64,9 @@ simpleOptions
   -> IO (a,b)
 simpleOptions versionString h pd globalParser commandParser =
   do args <- getArgs
-     case getParseResult (execParserPure (prefs idm) parser args) of
-       Nothing -> withArgs ["--help"] (execParser parser)
-       Just ab -> return ab
+     case execParserPure (prefs idm) parser args of
+       Failure _ | null args -> withArgs ["--help"] (execParser parser)
+       parseResult -> handleParseResult parseResult
   where parser = info (helpOption <*> versionOption <*> config) desc
         desc = fullDesc <> header h <> progDesc pd
         helpOption =
