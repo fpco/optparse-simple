@@ -89,13 +89,18 @@ simpleOptions versionString h pd globalParser commandParser =
 -- @$(simpleVersion …)@ @::@ 'String'
 simpleVersion :: Version -> Q Exp
 simpleVersion version =
-  [|concat ["Version "
+  [|concat (["Version "
            ,$(TH.lift $ showVersion version)
-           ,", Git revision "
-           ,$gitHash
-           ,if $gitDirty
-               then " (dirty)"
-               else ""]|]
+           ] ++
+           if $gitHash == "UNKNOWN"
+             then []
+             else
+               [", Git revision "
+               ,$gitHash
+               ,if $gitDirty
+                   then " (dirty)"
+                   else ""
+               ])|]
 
 -- | Add a command to the options dispatcher.
 addCommand :: String   -- ^ command string
