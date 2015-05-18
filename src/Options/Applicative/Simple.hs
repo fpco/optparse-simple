@@ -92,7 +92,7 @@ simpleVersion version =
   [|concat (["Version "
            ,$(TH.lift $ showVersion version)
            ] ++
-           if $gitHash == "UNKNOWN"
+           if $gitHash == ("UNKNOWN" :: String)
              then []
              else
                [", Git revision "
