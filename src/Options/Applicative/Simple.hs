@@ -49,7 +49,7 @@ import qualified Language.Haskell.TH.Syntax as TH
 import           Options.Applicative
 import           System.Environment
 
--- | Generate a simple options parser.
+-- | Generate and execute a simple options parser.
 simpleOptions
   :: String
   -- ^ version string
@@ -67,22 +67,13 @@ simpleOptions versionString h pd globalParser commandParser =
      case execParserPure (prefs idm) parser args of
        Failure _ | null args -> withArgs ["--help"] (execParser parser)
        parseResult -> handleParseResult parseResult
-  where parser = info (helpOption <*> versionOption <*> config) desc
+  where parser = info (versionOption <*> simpleParser globalParser commandParser) desc
         desc = fullDesc <> header h <> progDesc pd
-        helpOption =
-          abortOption ShowHelpText $
-          long "help" <>
-          help "Show this help text"
         versionOption =
           infoOption
             versionString
             (long "version" <>
              help "Show version")
-        config =
-          (,) <$> globalParser <*>
-          case runWriter (runEitherT commandParser) of
-            (Right (),d) -> subparser d
-            (Left b,_) -> pure b
 
 -- | Generate a string like @Version 1.2, Git revision 1234@.
 --
@@ -112,3 +103,74 @@ addCommand cmd title constr inner =
   lift (tell (command cmd
                       (info (constr <$> inner)
                             (progDesc title))))
+
+-- | Add a command that takes sub-commands to the options dispatcher.
+--
+-- Example:
+--
+-- @
+-- addSubCommands "thing"
+--                "Subcommands that operate on things"
+--                (do addCommand "delete"
+--                               "Delete the thing"
+--                               (const deleteTheThing)
+--                               (pure ())
+--                    addCommand "create"
+--                               "Create a thing"
+--                               createAThing
+--                               (strOption (long "hello")))
+-- @
+--
+-- If there are common options between all the sub-commands, use 'addCommand'
+-- in combination with 'simpleParser' instead of 'addSubCommands'.
+addSubCommands
+  :: String
+  -- ^ command string
+  -> String
+  -- ^ title of command
+  -> EitherT b (Writer (Mod CommandFields b)) ()
+  -- ^ sub-commands (use 'addCommand')
+  -> EitherT b (Writer (Mod CommandFields b)) ()
+addSubCommands cmd title commandParser =
+  addCommand cmd
+             title
+             (\((), a) -> a)
+             (simpleParser (pure ()) commandParser)
+
+-- | Generate a simple options parser.
+--
+-- Most of the time you should use 'simpleOptions' instead, but 'simpleParser'
+-- can be used for sub-commands that need common options.  For example:
+--
+-- @
+-- addCommand "thing"
+--            "Subcommands that operate on things"
+--            (\\(opts,runSubCmd) -> runSubCmd opts)
+--            (simpleParser (flag () () (long "some-flag")) $
+--             do addCommand "delete"
+--                           "Delete the thing"
+--                           (const deleteTheThing)
+--                           (pure ())
+--                addCommand "create"
+--                           "Create a thing"
+--                           createAThing
+--                           (strOption (long "hello")))
+-- @
+--
+simpleParser
+  :: Parser a
+  -- ^ common settings
+  -> EitherT b (Writer (Mod CommandFields b)) ()
+  -- ^ commands (use 'addCommand')
+  -> Parser (a,b)
+simpleParser commonParser commandParser =
+  helpOption <*> config
+  where helpOption =
+          abortOption ShowHelpText $
+          long "help" <>
+          help "Show this help text"
+        config =
+          (,) <$> commonParser <*>
+          case runWriter (runEitherT commandParser) of
+            (Right (),d) -> subparser d
+            (Left b,_) -> pure b
