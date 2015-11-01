@@ -1,7 +1,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE OverloadedStrings #-}
 
-import Options.Applicative.Simple
+import Options.Applicative.Simple hiding(action)
 import GHC.IO.Handle
 import System.IO
 import System.Environment
@@ -92,7 +92,7 @@ withStdIn :: ByteString -> IO ()
 withStdIn inBS action = do
   BS.writeFile stdinFile inBS
   withFakeHandles $ do
-    code <- catchExitCode action
+    _ <- catchExitCode action
     hFlush stdout
     hFlush stderr
   out <- BS.readFile stdoutFile
@@ -111,12 +111,14 @@ main = do
     $ withArgs ["--version"]
     $ simpleProg
   exitCode `shouldBe` ExitSuccess
+  err `shouldBe` ""
   out `shouldBe` "version\n"
 
   (out', err', exitCode') <- withStdIn ""
     $ withArgs ["--summary"]
     $ summaryProg
   exitCode' `shouldBe` ExitSuccess
+  err' `shouldBe` ""
   out' `shouldBe` "A program summary\n"
 
   return ()
