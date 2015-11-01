@@ -21,3 +21,14 @@ library
                    , optparse-applicative
                    , gitrev
                    , either
+
+test-suite test
+  type:              exitcode-stdio-1.0
+  main-is:           Main.hs
+  build-depends:
+                     base -any
+                   , optparse-simple
+                   , directory -any
+                   , bytestring -any
+  hs-source-dirs:    test
+  ghc-options:       -Wall -O2
