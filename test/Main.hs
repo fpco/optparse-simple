@@ -19,6 +19,7 @@ shouldBe actual expected
   | otherwise = do
     putStrLn $ "expected: " ++ show expected
     putStrLn $ "actual  : " ++ show actual
+    exitFailure
 
 catchReturn :: Exception e => IO e -> IO e
 catchReturn io = io `catch` return
