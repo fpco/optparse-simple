@@ -101,7 +101,7 @@ addCommand :: String   -- ^ command string
            -> EitherT b (Writer (Mod CommandFields b)) ()
 addCommand cmd title constr inner =
   lift (tell (command cmd
-                      (info (constr <$> inner)
+                      (info (constr <$> (helper <*> inner))
                             (progDesc title))))
 
 -- | Add a command that takes sub-commands to the options dispatcher.
