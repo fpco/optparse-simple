@@ -11,6 +11,7 @@ import System.Directory
 import System.Exit
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
+import Data.Monoid ((<>))
 
 
 shouldBe :: (Show a, Eq a) => a -> a -> IO ()
