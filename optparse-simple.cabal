@@ -33,3 +33,7 @@ test-suite test
                    , bytestring -any
   hs-source-dirs:    test
   ghc-options:       -Wall
+
+source-repository head
+  type:              git
+  location:          https://github.com/fpco/optparse-simple
