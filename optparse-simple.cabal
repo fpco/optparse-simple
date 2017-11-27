@@ -1,5 +1,5 @@
 name:                optparse-simple
-version:             0.0.4
+version:             0.1.0
 synopsis:            Simple interface to optparse-applicative
 description:         Simple interface to optparse-applicative
 license:             BSD3
@@ -21,7 +21,7 @@ library
                    , transformers
                    , optparse-applicative
                    , gitrev
-                   , either
+                   , transformers >= 0.4
 
 test-suite test
   type:              exitcode-stdio-1.0
