@@ -8,3 +8,5 @@ TAGS
 tags
 *.tag
 .stack-work/
+optparse-simple.cabal
+tarballs/

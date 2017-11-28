@@ -1,0 +1,36 @@
+name:        optparse-simple
+version:     0.1.0
+synopsis:    Simple interface to optparse-applicative
+description: Please see the README at <https://www.stackage.org/package/optparse-simple>
+category:    Options
+author:      FP Complete
+maintainer:  chrisdone@fpcomplete.com
+copyright:   2015-2017 FP Complete
+license:     BSD3
+github:      fpco/optparse-simple
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+dependencies:
+- base >=4 && <5
+
+library:
+  source-dirs: src/
+  ghc-options: -Wall
+  dependencies:
+  - template-haskell
+  - optparse-applicative
+  - gitrev
+  - transformers >=0.4
+tests:
+  test:
+    main: Main.hs
+    source-dirs: test
+    ghc-options: -Wall
+    dependencies:
+    - base
+    - optparse-simple
+    - directory
+    - bytestring

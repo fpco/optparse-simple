@@ -39,7 +39,7 @@ module Options.Applicative.Simple
   ) where
 
 import           Control.Monad.Trans.Class (lift)
-import           Control.Monad.Trans.Either
+import           Control.Monad.Trans.Except
 import           Control.Monad.Trans.Writer
 import           Data.Monoid
 import           Data.Version
@@ -59,7 +59,7 @@ simpleOptions
   -- ^ program description
   -> Parser a
   -- ^ global settings
-  -> EitherT b (Writer (Mod CommandFields b)) ()
+  -> ExceptT b (Writer (Mod CommandFields b)) ()
   -- ^ commands (use 'addCommand')
   -> IO (a,b)
 simpleOptions versionString h pd globalParser commandParser =
@@ -98,7 +98,7 @@ addCommand :: String   -- ^ command string
            -> String   -- ^ title of command
            -> (a -> b) -- ^ constructor to wrap up command in common data type
            -> Parser a -- ^ command parser
-           -> EitherT b (Writer (Mod CommandFields b)) ()
+           -> ExceptT b (Writer (Mod CommandFields b)) ()
 addCommand cmd title constr inner =
   lift (tell (command cmd
                       (info (constr <$> (helper <*> inner))
@@ -128,9 +128,9 @@ addSubCommands
   -- ^ command string
   -> String
   -- ^ title of command
-  -> EitherT b (Writer (Mod CommandFields b)) ()
+  -> ExceptT b (Writer (Mod CommandFields b)) ()
   -- ^ sub-commands (use 'addCommand')
-  -> EitherT b (Writer (Mod CommandFields b)) ()
+  -> ExceptT b (Writer (Mod CommandFields b)) ()
 addSubCommands cmd title commandParser =
   addCommand cmd
              title
@@ -160,7 +160,7 @@ addSubCommands cmd title commandParser =
 simpleParser
   :: Parser a
   -- ^ common settings
-  -> EitherT b (Writer (Mod CommandFields b)) ()
+  -> ExceptT b (Writer (Mod CommandFields b)) ()
   -- ^ commands (use 'addCommand')
   -> Parser (a,b)
 simpleParser commonParser commandParser =
@@ -171,6 +171,6 @@ simpleParser commonParser commandParser =
           help "Show this help text"
         config =
           (,) <$> commonParser <*>
-          case runWriter (runEitherT commandParser) of
+          case runWriter (runExceptT commandParser) of
             (Right (),d) -> subparser d
             (Left b,_) -> pure b
