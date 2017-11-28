@@ -1,7 +1,7 @@
 name:        optparse-simple
 version:     0.1.0
 synopsis:    Simple interface to optparse-applicative
-description: Simple interface to optparse-applicative
+description: Please see the README at <https://www.stackage.org/package/optparse-simple>
 category:    Options
 author:      FP Complete
 maintainer:  chrisdone@fpcomplete.com
