@@ -22,7 +22,7 @@ library:
   dependencies:
   - template-haskell
   - optparse-applicative
-  - gitrev
+  - githash >= 0.1.3
   - transformers >=0.4
 tests:
   test:

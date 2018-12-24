@@ -42,7 +42,7 @@ import           Control.Monad.Trans.Class (lift)
 import           Control.Monad.Trans.Except
 import           Control.Monad.Trans.Writer
 import           Data.Version
-import           Development.GitRev (gitDirty, gitHash)
+import           GitHash (giDirty, giHash, tGitInfoCwdTry)
 import           Language.Haskell.TH (Q,Exp)
 import qualified Language.Haskell.TH.Syntax as TH
 import           Options.Applicative
@@ -82,15 +82,18 @@ simpleVersion version =
   [|concat (["Version "
            ,$(TH.lift $ showVersion version)
            ] ++
-           if $gitHash == ("UNKNOWN" :: String)
-             then []
-             else
-               [", Git revision "
-               ,$gitHash
-               ,if $gitDirty
-                   then " (dirty)"
-                   else ""
-               ])|]
+           case giResult of
+             Left _ -> []
+             Right gi ->
+               if giHash gi == "UNKNOWN"
+               then []
+               else [ ", Git revision "
+                    , giHash gi
+                    , if giDirty gi then " (dirty)" else ""
+                    ]
+           )|]
+  where
+    giResult = $$tGitInfoCwdTry
 
 -- | Add a command to the options dispatcher.
 addCommand :: String   -- ^ command string
