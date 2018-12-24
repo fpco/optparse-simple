@@ -27,6 +27,13 @@ library:
   when:
     - condition: impl (ghc < 8.0)
       dependencies: semigroups == 0.18.*
+
+executables:
+  simple:
+    main: example/Simple.hs
+    dependencies:
+    - optparse-simple
+
 tests:
   test:
     main: Main.hs
