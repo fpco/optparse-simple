@@ -88,13 +88,10 @@ simpleVersion version =
            ] ++
            case giResult of
              Left _ -> []
-             Right gi ->
-               if giHash gi == "UNKNOWN"
-               then []
-               else [ ", Git revision "
-                    , giHash gi
-                    , if giDirty gi then " (dirty)" else ""
-                    ]
+             Right gi -> [ ", Git revision "
+                         , giHash gi
+                         , if giDirty gi then " (dirty)" else ""
+                         ]
            )|]
   where
     giResult = $$tGitInfoCwdTry
