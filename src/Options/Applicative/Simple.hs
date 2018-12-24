@@ -41,7 +41,6 @@ module Options.Applicative.Simple
 import           Control.Monad.Trans.Class (lift)
 import           Control.Monad.Trans.Except
 import           Control.Monad.Trans.Writer
-import           Data.Monoid
 import           Data.Version
 import           Development.GitRev (gitDirty, gitHash)
 import           Language.Haskell.TH (Q,Exp)
