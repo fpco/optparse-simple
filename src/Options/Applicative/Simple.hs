@@ -1,4 +1,5 @@
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE CPP #-}
 
 -- | Simple interface to program arguments.
 --
@@ -41,6 +42,9 @@ module Options.Applicative.Simple
 import           Control.Monad.Trans.Class (lift)
 import           Control.Monad.Trans.Except
 import           Control.Monad.Trans.Writer
+#if !MIN_VERSION_base(4,11,0)
+import           Data.Semigroup
+#endif
 import           Data.Version
 import           GitHash (giDirty, giHash, tGitInfoCwdTry)
 import           Language.Haskell.TH (Q,Exp)
