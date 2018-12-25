@@ -28,11 +28,23 @@ library:
     - condition: impl (ghc < 8.0)
       dependencies: semigroups == 0.18.*
 
+flags:
+  build-example:
+    default: False
+    manual: True
+    description: Build the example executable
+
 executables:
   simple:
     main: example/Simple.hs
     dependencies:
     - optparse-simple
+    when:
+    - condition: flag(build-example)
+      then:
+        buildable: true
+      else:
+        buildable: false
 
 tests:
   test:
