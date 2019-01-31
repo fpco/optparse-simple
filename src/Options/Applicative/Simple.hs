@@ -1,3 +1,6 @@
+-- Try to ensure that https://github.com/fpco/optparse-simple/issues/12 doesn't recur.
+{-# LANGUAGE OverloadedStrings #-}
+
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE CPP #-}
 
@@ -46,7 +49,7 @@ import           Control.Monad.Trans.Writer
 import           Data.Semigroup
 #endif
 import           Data.Version
-import           GitHash (giDirty, giHash, tGitInfoCwdTry)
+import           GitHash (GitInfo, giDirty, giHash, tGitInfoCwdTry)
 import           Language.Haskell.TH (Q,Exp)
 import qualified Language.Haskell.TH.Syntax as TH
 import           Options.Applicative
@@ -86,7 +89,7 @@ simpleVersion version =
   [|concat (["Version "
            ,$(TH.lift $ showVersion version)
            ] ++
-           case giResult of
+           case giResult :: Either String GitInfo of
              Left _ -> []
              Right gi -> [ ", Git revision "
                          , giHash gi

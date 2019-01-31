@@ -1,3 +1,7 @@
+## 0.1.1.1
+
+* Add explicit signature to work around [#12](https://github.com/fpco/optparse-simple/issues/12)
+
 ## 0.1.1
 
 * Switch dependency `gitrev` to `githash`
