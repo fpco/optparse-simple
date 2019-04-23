@@ -89,15 +89,13 @@ simpleVersion version =
   [|concat (["Version "
            ,$(TH.lift $ showVersion version)
            ] ++
-           case giResult :: Either String GitInfo of
+           case $(TH.unTypeQ tGitInfoCwdTry) :: Either String GitInfo of
              Left _ -> []
              Right gi -> [ ", Git revision "
                          , giHash gi
                          , if giDirty gi then " (dirty)" else ""
                          ]
            )|]
-  where
-    giResult = $$tGitInfoCwdTry
 
 -- | Add a command to the options dispatcher.
 addCommand :: String   -- ^ command string
