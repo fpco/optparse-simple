@@ -170,7 +170,11 @@ simpleParser
 simpleParser commonParser commandParser =
   helpOption <*> config
   where helpOption =
+#if MIN_VERSION_optparse_applicative(0,16,0)
+          abortOption (ShowHelpText Nothing) $
+#else
           abortOption ShowHelpText $
+#endif
           long "help" <>
           help "Show this help text"
         config =
