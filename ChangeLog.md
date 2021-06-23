@@ -1,5 +1,9 @@
 # ChangeLog for optparse-simple
 
+## 0.1.1.4
+
+* template-haskell 2.17 support [#15](https://github.com/fpco/optparse-simple/pull/15)
+
 ## 0.1.1.3
 
 * optparse-applicative 0.16.0.0 support [#14](https://github.com/fpco/optparse-simple/issues/14)

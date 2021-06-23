@@ -52,6 +52,7 @@ import           Data.Version
 import           GitHash (GitInfo, giDirty, giHash, tGitInfoCwdTry)
 import           Language.Haskell.TH (Q,Exp)
 import qualified Language.Haskell.TH.Syntax as TH
+import           Language.Haskell.TH.Syntax.Compat
 import           Options.Applicative
 import           System.Environment
 
@@ -89,7 +90,7 @@ simpleVersion version =
   [|concat (["Version "
            ,$(TH.lift $ showVersion version)
            ] ++
-           case $(TH.unTypeQ tGitInfoCwdTry) :: Either String GitInfo of
+           case $(unTypeSplice tGitInfoCwdTry) :: Either String GitInfo of
              Left _ -> []
              Right gi -> [ ", Git revision "
                          , giHash gi
